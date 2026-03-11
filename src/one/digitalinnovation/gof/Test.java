@@ -1,5 +1,7 @@
 package one.digitalinnovation.gof;
 
+import one.digitalinnovation.gof.chain.Pedido;
+import one.digitalinnovation.gof.chain.ProcessadorPedido;
 import one.digitalinnovation.gof.facade.Facade;
 import one.digitalinnovation.gof.singleton.SingletonEager;
 import one.digitalinnovation.gof.singleton.SingletonLazy;
@@ -52,6 +54,28 @@ public class Test {
 		
 		Facade facade = new Facade();
 		facade.migrarCliente("Venilton", "14801788");
+		
+		// Chain of Responsibility
+		ProcessadorPedido processadorPedido = new ProcessadorPedido(1000.0);
+		
+		Pedido pedidoAprovado = new Pedido("Joana", 850.0, true, false);
+		Pedido pedidoClienteInativo = new Pedido("Mario", 500.0, false, false);
+		Pedido pedidoFraude = new Pedido("Carla", 300.0, true, true);
+		Pedido pedidoAcimaDoLimite = new Pedido("Renato", 5000.0, true, false);
+		
+		processarPedido(processadorPedido, pedidoAprovado);
+		processarPedido(processadorPedido, pedidoClienteInativo);
+		processarPedido(processadorPedido, pedidoFraude);
+		processarPedido(processadorPedido, pedidoAcimaDoLimite);
 	}
 
+	private static void processarPedido(ProcessadorPedido processadorPedido, Pedido pedido) {
+		processadorPedido.processar(pedido);
+		System.out.println("Pedido cliente: " + pedido.getCliente());
+		System.out.println("Aprovado: " + pedido.isAprovado());
+		if (!pedido.isAprovado()) {
+			System.out.println("Motivo: " + pedido.getMotivoReprovacao());
+		}
+		System.out.println("---");
+	}
 }
